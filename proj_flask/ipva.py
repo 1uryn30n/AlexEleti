@@ -1,33 +1,30 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 import requests
 
 app = Flask(__name__)
 
-@app.route('/estados')
+@app.route('/')
 def get_data():
-    # URL da API externa que você quer consumir
-    api_url = 'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
-
-    # Realiza a requisição GET para a API
-    response = requests.get(api_url)
-
-    # Verifica se a requisição foi bem-sucedida (código 200)
-    if response.status_code == 200:
-        # Obtém os dados da API como JSON
-        dados_api = response.json()
-        # Renderiza o template HTML passando os dados da API
-        return render_template('estados.html', estados=dados_api)
-        #return jsonify(dados_api)
-    else:
-        # Caso contrário, retorna uma mensagem de erro
-        return jsonify({'message': 'Erro ao acessar a API'}), 500
+    apiEstados = 'https://servicodados.ibge.gov.br/api/v1/localidades/estados'
+    apiFipe = 'https://parallelum.com.br/fipe/api/v1/'
+    response = requests.get(apiEstados)
     
-@app.route('/<estado_id>')
-def get_info_estado(estado_id):
-    # Aqui você teria a lógica para obter as informações do estado com base no estado_id
-    # Por exemplo, fazer uma requisição à API com o ID do estado
-    estado = {'id': estado_id, 'nome': 'iury', 'sigla': 'LUry'}
-    return jsonify(estado)
+    if response.status_code == 200:
+        dados_api = response.json()
+        # return jsonify(dados_api)
+        # dados_api = jsonify(dados_api)
+        estado = request.args.get('estado')
+        tipoVeiculo = request.args.get('tipoVeiculo')
+        if tipoVeiculo:
+            apiFipe = apiFipe+tipoVeiculo+'/marcas'
+            responseTwo = requests.get(apiFipe)
+            if responseTwo.status_code == 200:
+                dados_marca = responseTwo.json()
+            else:
+                return jsonify({'message': 'Erro ao acessar a API'}), 500
+        return render_template('estados.html', estados = dados_api, estado = estado, dados_marca = dados_marca)
+    else:
+        return jsonify({'message': 'Erro ao acessar a API'}), 500
 
 if __name__ == '__main__':
     app.run(debug=True)

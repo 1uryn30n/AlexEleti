@@ -7,35 +7,36 @@
 <body>
     <h1>Selecione um Estado</h1>
 
-    <form id="estadoForm">
-        <label for="estados">Escolha um estado:</label>
-        <select id="estados" name="estados">
+    <form id="estadoForm" method="get">
+        <label for="estado">Escolha um estado:</label>
+        <select id="estado" name="estado" required>
             {% for estado in estados %}
                 <option value="{{ estado.id }}">{{ estado.nome }}</option>
             {% endfor %}
         </select>
+        {% if estado %}
+            <br>
+            <label for="tipoVeiculo">Escolha o tipo do Veiculo:</label>
+            <select id="tipoVeiculo" name="tipoVeiculo">
+                    <option value="caminhoes">Caminhoes</option>
+                    <option value="carros">Carros</option>
+                    <option value="motos">Motos</option>
+            </select>
+            {% if dados_marca %}
+                <br>
+                <label for="arca">Escolha a Marca do Veiculo:</label>
+                <select id="marca" name="marca">
+                    
+                    {% for marca in dados_marca %}
+                        <option value="">{{ marca.nome }}</option>
+                    {% endfor %}
+                </select>
+            {% endif %}
+        {% endif %}
         <button type="submit">Enviar</button>
     </form>
-
+    <br>    
     <div id="infoEstado"></div>
-
-    <script>
-        document.getElementById('estadoForm').addEventListener('submit', function(event) {
-            event.preventDefault();
-            var selectedStateId = document.getElementById('estados').value;
-
-            fetch('/' + selectedStateId)
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('infoEstado').innerHTML = '<h2>' + data.nome + ' - ' + data.sigla + '</h2>';
-                    // Aqui você pode adicionar mais informações que deseja exibir
-                })
-                .catch(error => {
-                    console.error('Erro:', error);
-                });
-        });
-    </script>
-
 </body>
 </html>
 
