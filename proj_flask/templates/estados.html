@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Dados dos Estados</title>
+</head>
+<body>
+    <h1>Selecione um Estado</h1>
+
+    <form id="estadoForm">
+        <label for="estados">Escolha um estado:</label>
+        <select id="estados" name="estados">
+            {% for estado in estados %}
+                <option value="{{ estado.id }}">{{ estado.nome }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Enviar</button>
+    </form>
+
+    <div id="infoEstado"></div>
+
+    <script>
+        document.getElementById('estadoForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var selectedStateId = document.getElementById('estados').value;
+
+            fetch('/' + selectedStateId)
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('infoEstado').innerHTML = '<h2>' + data.nome + ' - ' + data.sigla + '</h2>';
+                    // Aqui você pode adicionar mais informações que deseja exibir
+                })
+                .catch(error => {
+                    console.error('Erro:', error);
+                });
+        });
+    </script>
+
+</body>
+</html>
+
